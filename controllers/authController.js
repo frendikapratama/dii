@@ -1,24 +1,21 @@
-// controllers/authController.js
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const db = require("../config/db");
-
+const User = require("../models/User");
 require("dotenv").config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
   const { email, password } = req.body;
 
-  const sql = "SELECT * FROM users WHERE email = ?";
-  db.query(sql, [email], async (err, results) => {
-    if (err || results.length === 0) {
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
       return res.status(401).json({ error: "Email tidak ditemukan" });
     }
 
-    const user = results[0];
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
       return res.status(401).json({ error: "Password salah" });
     }
@@ -28,5 +25,8 @@ exports.login = (req, res) => {
     });
 
     res.json({ token });
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Login gagal" });
+  }
 };
