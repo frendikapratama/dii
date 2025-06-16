@@ -8,6 +8,10 @@ const SECRET_KEY = process.env.JWT_SECRET;
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email dan password harus diisi" });
+  }
+
   try {
     const user = await User.findOne({ where: { email } });
 
@@ -15,7 +19,9 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: "Email tidak ditemukan" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const fixedHash = user.password.replace(/^\$2y\$/, "$2b$");
+    const isMatch = await bcrypt.compare(password, fixedHash);
+
     if (!isMatch) {
       return res.status(401).json({ error: "Password salah" });
     }

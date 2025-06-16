@@ -4,10 +4,6 @@ const sequelize = require("./index");
 const User = sequelize.define(
   "User",
   {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -17,12 +13,10 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    email_verified_at: DataTypes.DATE,
-    remember_token: DataTypes.STRING,
   },
   {
     tableName: "users",
-    timestamps: true,
+    timestamps: false,
   }
 );
 

@@ -14,7 +14,9 @@ const verifyToken = (req, res, next) => {
 
   jwt.verify(token, SECRET_KEY, (err, user) => {
     if (err)
-      return res.status(403).json({ error: "Token kadaluarsa/tidak valid" });
+      return res
+        .status(403)
+        .json({ error: "Token kadaluarsa atau tidak valid" });
 
     req.user = user;
     next();
